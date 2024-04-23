@@ -8,4 +8,8 @@
 -- This will delete the tables every time the sql script is called
 DROP TABLE IF EXISTS preference, rider_preference;
 
--- Add here your sql statements to create the tables "preference" and "rider_preference"
+CREATE TABLE rider_preference (rider_id BIGINT PRIMARY KEY NOT NULL, vehicle_class TEXT, area TEXT);
+
+CREATE TABLE preference (id BIGINT AUTO_INCREMENT PRIMARY KEY NOT NULL, rider_id BIGINT, pref_key TEXT, pref_value TEXT,
+                            FOREIGN KEY (rider_id) REFERENCES rider_preference (rider_id));
+

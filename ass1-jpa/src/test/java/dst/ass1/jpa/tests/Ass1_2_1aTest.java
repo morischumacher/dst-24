@@ -1,8 +1,8 @@
 package dst.ass1.jpa.tests;
 
-import dst.ass1.jpa.dao.IRiderDAO;
-import dst.ass1.jpa.model.IRider;
-import dst.ass1.jpa.util.Constants;
+import dst.ass1.jpa.dao.*;
+import dst.ass1.jpa.model.*;
+import dst.ass1.jpa.util.*;
 import org.junit.Before;
 import org.junit.Test;
 

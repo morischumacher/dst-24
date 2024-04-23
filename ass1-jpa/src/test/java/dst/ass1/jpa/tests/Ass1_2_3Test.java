@@ -1,8 +1,8 @@
 package dst.ass1.jpa.tests;
 
-import dst.ass1.jpa.dao.ITripReceiptDAO;
-import dst.ass1.jpa.model.PaymentMethod;
-import dst.ass1.jpa.util.TupleResult;
+import dst.ass1.jpa.dao.*;
+import dst.ass1.jpa.model.*;
+import dst.ass1.jpa.util.*;
 import org.junit.Before;
 import org.junit.Test;
 

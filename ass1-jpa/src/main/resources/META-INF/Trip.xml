@@ -5,5 +5,46 @@
                  version="2.2">
 
     <!-- TODO -->
-
+    <entity class="dst.ass1.jpa.model.impl.Trip" name="Trip">
+        <table name="Trip"/>
+        <attributes>
+            <id name="id">
+                <column name="trip_id"/>
+                <generated-value strategy="AUTO"/>
+            </id>
+            <basic name="created">
+                <column name="created"/>
+                <temporal>DATE</temporal>
+            </basic>
+            <basic name="updated">
+                <column name="updated"/>
+                <temporal>DATE</temporal>
+            </basic>
+            <basic name="state">
+                <column name="state"/>
+                <enumerated>ORDINAL</enumerated>
+            </basic>
+            <many-to-one target-entity="dst.ass1.jpa.model.impl.Rider" name="rider">
+                <join-column name="rider_id" nullable="true"/>
+            </many-to-one>
+            <one-to-one name="pickup" target-entity="dst.ass1.jpa.model.impl.Location" fetch="EAGER">
+                <join-column name="pickup_id" nullable="false"/>
+            </one-to-one>
+            <one-to-one name="destination" target-entity="dst.ass1.jpa.model.impl.Location" fetch="EAGER">
+                <join-column name="destination_id" nullable="false"/>
+            </one-to-one>
+            <one-to-one name="tripInfo" target-entity="dst.ass1.jpa.model.impl.TripInfo" fetch="EAGER">
+                <join-column name="tripInfo_id" nullable="true"/>
+            </one-to-one>
+            <one-to-one name="match" target-entity="dst.ass1.jpa.model.impl.Match" fetch="EAGER">
+                <join-column name="match" nullable="true"/>
+            </one-to-one>
+            <many-to-many name="stops" target-entity="dst.ass1.jpa.model.impl.Location" fetch="LAZY">
+                <join-table name="trip_location">
+                    <join-column name="trip_id"/>
+                    <inverse-join-column name="stops_id"/>
+                </join-table>
+            </many-to-many>
+        </attributes>
+    </entity>
 </entity-mappings>

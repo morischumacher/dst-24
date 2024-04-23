@@ -120,7 +120,6 @@ public class Ass1_1_1_01Test {
     @Test
     public void testRelation07Jdbc() throws Exception {
         // trip -> location (pickup)
-
         err.checkThat(db.getColumns(T_TRIP), hasItems(I_PICKUP));
         err.checkThat(db.isIndex(T_TRIP, I_PICKUP, true), is(true));
         err.checkThat(db.isNullable(T_TRIP, I_PICKUP), is(false));
@@ -153,7 +152,6 @@ public class Ass1_1_1_01Test {
     @Test
     public void testRelation11Jdbc() throws Exception {
         // Rider -> PaymentInfo
-
         err.checkThat(db.getTables(), hasItems(J_RIDER_PAYMENT_INFO));
         err.checkThat(db.getColumns(J_RIDER_PAYMENT_INFO), hasItems(I_RIDER, I_PAYMENT_INFOS));
     }

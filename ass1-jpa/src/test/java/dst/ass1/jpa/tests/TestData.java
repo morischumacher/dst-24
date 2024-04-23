@@ -1,6 +1,6 @@
 package dst.ass1.jpa.tests;
 
-import dst.ass1.jpa.ITestData;
+import dst.ass1.jpa.*;
 import dst.ass1.jpa.model.*;
 
 import javax.persistence.EntityManager;
