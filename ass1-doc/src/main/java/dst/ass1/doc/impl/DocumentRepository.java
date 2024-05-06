@@ -21,7 +21,9 @@ public class DocumentRepository implements IDocumentRepository {
     }
     @Override
     public void insert(ILocation location, Map<String, Object> locationProperties) {
+        //get the collection in the database
         var coll = db.getCollection(Constants.COLL_LOCATION_DATA);
+
         var doc = new Document(locationProperties);
         doc.put("location_id", location.getLocationId());
         doc.put("name", location.getName());

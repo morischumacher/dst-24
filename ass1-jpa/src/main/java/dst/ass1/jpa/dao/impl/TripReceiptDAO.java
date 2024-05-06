@@ -23,6 +23,8 @@ public class TripReceiptDAO implements ITripReceiptDAO {
         this.entityManager = entityManager;
     }
 
+
+    //JPA Criteria API Queries
     @Override
     public List<TupleResult<PaymentMethod, Double>> calculateAverageTipPerPaymentMethod(Date startDate, Date endDate) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();

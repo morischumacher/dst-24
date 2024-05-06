@@ -18,12 +18,15 @@ public class RiderDAO extends AbstractDAO<IRider, Rider> implements IRiderDAO {
         super(entityManager, Rider.class, Constants.T_RIDER);
     }
 
+    //complex named queries
     @Override
     public List<IRider> findRidersWithNoTrips(Date start, Date end) {
         if (start == null || end == null) {
             throw new IllegalArgumentException("Start and end parameters are required.");
         }
 
+        //get all rider within this range
+        //should be active rider
         TypedQuery<Rider> inactiveRiderQuery = em.createNamedQuery(Constants.Q_INACTIVE_RIDER, Rider.class)
                 .setParameter("start", start)
                 .setParameter("end", end);

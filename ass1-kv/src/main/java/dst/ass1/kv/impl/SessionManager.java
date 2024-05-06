@@ -35,7 +35,7 @@ public class SessionManager implements ISessionManager {
                 transaction.hset(sessionId, "timeToLive", String.valueOf(timeToLive));
                 transaction.expire(sessionId, timeToLive);
 
-                // Update user directory
+                // User directory to have mapping between userId and sessionId
                 transaction.hset("directory", String.valueOf(userId), sessionId);
 
                 transaction.exec();

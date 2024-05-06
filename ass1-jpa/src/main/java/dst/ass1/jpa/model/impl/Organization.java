@@ -24,6 +24,7 @@ public class Organization implements IOrganization {
     @OneToMany(mappedBy = "id.organization")
     private Collection<Employment> employments = new ArrayList<>();
 
+    // shows the two primary keys of the target and source entity
     @ManyToMany
     @JoinTable(
             name = Constants.J_ORGANIZATION_VEHICLE,
@@ -33,6 +34,7 @@ public class Organization implements IOrganization {
     private Collection<Vehicle> vehicles = new ArrayList<>();
 
 
+    // shows the two primary keys of the target and source entity
     @ManyToMany
     @JoinTable(
             name = Constants.J_ORGANIZATION_PARTS,

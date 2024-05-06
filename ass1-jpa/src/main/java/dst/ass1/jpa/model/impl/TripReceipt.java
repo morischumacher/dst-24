@@ -14,6 +14,7 @@ public class TripReceipt implements ITripReceipt {
     @Column(name = Constants.I_TRIP_RECEIPT)
     private Long id;
 
+    //declare first the identifiers in money, then how they appear in TripReceipt
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name="currency", column= @Column(name="currency")),
@@ -30,10 +31,12 @@ public class TripReceipt implements ITripReceipt {
 
     private boolean paid;
 
+    //should be one to one
     @ManyToOne
     @JoinColumn(name = Constants.I_PAYMENT_INFO)
     private TripInfo tripInfo;
 
+    //should be many to one
     @OneToOne
     @JoinColumn(name = Constants.I_TRIP_INFO)
     private PaymentInfo paymentInfo;

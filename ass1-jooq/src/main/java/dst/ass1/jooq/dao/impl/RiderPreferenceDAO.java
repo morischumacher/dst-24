@@ -5,6 +5,7 @@ import dst.ass1.jooq.dao.IRiderPreferenceDAO;
 import dst.ass1.jooq.model.IRiderPreference;
 import dst.ass1.jooq.model.impl.RiderPreference;
 import org.jooq.*;
+import org.jooq.Record;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

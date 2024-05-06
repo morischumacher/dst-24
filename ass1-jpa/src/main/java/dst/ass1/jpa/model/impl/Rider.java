@@ -32,9 +32,12 @@ import java.util.stream.Collectors;
 public class Rider extends PlatformUser implements IRider {
     @Column(name = Constants.M_RIDER_EMAIL, nullable = false)
     private String email;
+
+    //hash?
     @Column(name = Constants.M_RIDER_PASSWORD, length = 20)
     private byte[] password;
 
+    //should be one to many
     @ManyToMany
     @JoinTable(
             name = Constants.J_RIDER_PAYMENT_INFO,
