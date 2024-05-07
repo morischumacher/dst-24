@@ -15,4 +15,7 @@ public interface ITripDAO extends GenericDAO<ITrip> {
      * @throws IllegalArgumentException if state is null
      */
     List<ITrip> findByStatus(TripState state);
+
+    List<ITrip> findDriversActiveTrips(Long driverId);
+
 }
