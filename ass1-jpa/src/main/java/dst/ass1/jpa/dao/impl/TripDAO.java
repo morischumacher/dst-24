@@ -22,7 +22,7 @@ public class TripDAO extends AbstractDAO<ITrip, Trip> implements ITripDAO {
     public List<ITrip> findDriversActiveTrips(Long driverId) {
         return this.em.createQuery("SELECT t FROM Trip t WHERE t.rider.id = :driverId AND t.state = :state", this.cls)
                 .setParameter("driverId", driverId)
-                .setParameter("state", Arrays.asList(TripState.IN_PROGRESS, TripState.CREATED))
+                .setParameter("state", TripState.IN_PROGRESS)
                 .getResultList()
                 .stream()
                 .map(result -> (ITrip) result)
