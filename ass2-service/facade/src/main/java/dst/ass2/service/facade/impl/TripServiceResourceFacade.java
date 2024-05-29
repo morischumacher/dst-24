@@ -14,7 +14,10 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 
+// The facade pattern is used here to abstract the details of making HTTP requests to the ITripServiceResource.
 
+// Jersey client is used (jersey-proxy-client, which creates a dynamic proxy instance that exposes the resource interface,
+//// but internally makes a REST call to a specified URL)
 @Path("/trips")
 public class TripServiceResourceFacade implements ITripServiceResource {
 
@@ -22,6 +25,8 @@ public class TripServiceResourceFacade implements ITripServiceResource {
 
     @Inject
     public TripServiceResourceFacade(URI tripServiceURI) {
+
+        // ResourceConfig which is a configuration for the Jersey client
         var configuration = new ResourceConfig()
                 .packages("dst.ass2")
                 .property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true)
@@ -29,6 +34,8 @@ public class TripServiceResourceFacade implements ITripServiceResource {
                 .register(JacksonFeature.class);
 
         var client = ClientBuilder.newClient(configuration);
+
+        // TrippService resource at provided URI
         var webTarget = client.target(tripServiceURI);
         this.tripServiceResource = WebResourceFactory.newResource(ITripServiceResource.class, webTarget);
     }

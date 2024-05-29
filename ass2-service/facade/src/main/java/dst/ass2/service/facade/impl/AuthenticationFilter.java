@@ -10,7 +10,9 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 
+// Automatically discovered and applied to all resources
 @Provider
+// Only applied to resources and methods annotated with @AuthenticationRequired
 @AuthenticationRequired
 public class AuthenticationFilter implements ContainerRequestFilter {
 

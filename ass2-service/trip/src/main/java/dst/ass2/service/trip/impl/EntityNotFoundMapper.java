@@ -10,6 +10,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class EntityNotFoundMapper implements ExceptionMapper<EntityNotFoundException> {
 
+    // Custom JAX-RS exception maps a EntityNotFoundException to a HTTP 404 response.
     @Override
     public Response toResponse(EntityNotFoundException exception) {
         return Response.status(Response.Status.NOT_FOUND)

@@ -12,7 +12,11 @@ import io.grpc.StatusRuntimeException;
 
 public class GrpcAuthenticationClient implements IAuthenticationClient {
 
+    // The channel is the abstraction to connect to a service endpoint
     private final ManagedChannel channel;
+
+    // Client side stub/client side proxy which contains the methods for each function defined in the service
+    // It's a blocking/synchronous stub, it sends the request and waits for the response
     private final AuthServiceGrpc.AuthServiceBlockingStub blockingStub;
 
     public GrpcAuthenticationClient(AuthenticationClientProperties properties) {
@@ -33,7 +37,7 @@ public class GrpcAuthenticationClient implements IAuthenticationClient {
             return response.getToken();
         } catch (StatusRuntimeException e) {
             handleStatusRuntimeException(e);
-            return null; // unreachable code, added for completeness
+            return null;
         }
     }
 

@@ -9,13 +9,15 @@ import io.grpc.ServerBuilder;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
+// Managed by the Spring container.
 @ManagedBean
 public class GrpcServerRunner implements IGrpcServerRunner {
+
     private static final Logger logger = Logger.getLogger(GrpcServerRunner.class.getName());
 
+    // Injecting the GrpcServerProperties and AuthenticationServer.
     @Inject
     private GrpcServerProperties grpcServerProperties;
 
@@ -40,6 +42,7 @@ public class GrpcServerRunner implements IGrpcServerRunner {
         server.start();
     }
 
+    // Adds a shutdown hook to the server to ensure that the server is properly shut down when the JVM is shut down.
     private void addShutdownHook(Server server) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             logger.info("Shutting down gRPC server...");

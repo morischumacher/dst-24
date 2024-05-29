@@ -14,16 +14,20 @@ import io.grpc.stub.StreamObserver;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 
+//Managed by the Spring container
+//Settle up the gRPC server to make the authentication service available.
 @ManagedBean
 public class AuthenticationServer extends AuthServiceGrpc.AuthServiceImplBase {
 
     @Inject
     private IAuthenticationService authenticationService;
 
+    // StreamObserver used for receiving streaming data in an asynchronous and non-blocking manner
     @Override
     public void authenticate(AuthenticationRequest request, StreamObserver<AuthenticationResponse> responseObserver) {
         AuthenticationResponse.Builder responseBuilder = AuthenticationResponse.newBuilder();
         try {
+            // Call the IAuthenticationService (implemented from CachingAuthenticationService) to authenticate the user
             String token = authenticationService.authenticate(request.getEmail(), request.getPassword());
             responseBuilder.setToken(token).setAuthenticated(true);
         } catch (NoSuchUserException e) {
@@ -34,7 +38,10 @@ public class AuthenticationServer extends AuthServiceGrpc.AuthServiceImplBase {
             return;
         }
 
+        //StreamObserver.onNext() is called to send a response to the client
         responseObserver.onNext(responseBuilder.build());
+
+        // StreamObserver.onCompleted() is called to indicate that the client has finished sending messages
         responseObserver.onCompleted();
     }
 
@@ -47,6 +54,7 @@ public class AuthenticationServer extends AuthServiceGrpc.AuthServiceImplBase {
     }
 
     private void handleAuthenticationError(StreamObserver<?> responseObserver, Status status) {
+        //OnError() is called to send an error to the client
         responseObserver.onError(status.asException());
     }
 }

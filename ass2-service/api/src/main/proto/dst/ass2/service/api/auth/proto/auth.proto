@@ -1,8 +1,12 @@
+//service definition
+
 syntax = "proto3";
 
 package dst.ass2.service.api.auth.proto;
 
 option java_package = "dst.ass2.service.api.auth.proto";
+
+//generate separate files for each
 option java_multiple_files = true;
 
 message AuthenticationRequest {
@@ -10,6 +14,7 @@ message AuthenticationRequest {
   string password = 2;
 }
 
+// binary field 1 is authenticated, field 2 is token
 message AuthenticationResponse {
   bool authenticated = 1;
   string token = 2;
@@ -23,6 +28,7 @@ message TokenValidationResponse {
   bool valid = 1;
 }
 
+// Defining the remote procedure calls
 service AuthService {
   rpc authenticate(AuthenticationRequest) returns (AuthenticationResponse);
   rpc validateToken(TokenValidationRequest) returns (TokenValidationResponse);

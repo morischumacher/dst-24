@@ -7,9 +7,13 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
+
+// Annotations are part of the JAX-RS (API Java API for RESTful Web Services).
+// Class-level annotation to declare that the class provides web service resources
 @Path("/trips")
 public class TripServiceRessource implements ITripServiceResource {
 
+    // Annotation to inject an instance of the TripService class
     @Inject
     private ITripService tripService;
 
@@ -18,6 +22,7 @@ public class TripServiceRessource implements ITripServiceResource {
     @Path("")
     public Response createTrip(@FormParam("riderId") Long riderId, @FormParam("pickupId") Long pickupId, @FormParam("destinationId") Long destinationId) throws EntityNotFoundException {
         var trip = tripService.create(riderId, pickupId, destinationId);
+        //Constructs a new response with the specified status code and body
         return Response.status(Response.Status.OK)
                 .entity(trip.getId())
                 .build();

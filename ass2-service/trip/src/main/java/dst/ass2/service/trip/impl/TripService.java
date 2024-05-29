@@ -15,10 +15,14 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+//Used of Java EE to specify that a bean should be used a singleton (only one instance for each JVM), useful for shared
+// states across the application
 @Singleton
+//Are automatically created, managed, and destroyed by the JSF (JavaServer Faces) framework
 @ManagedBean
 public class TripService implements ITripService {
 
+    //Injecting the services and factories
     @Inject
     private IMatchingService matchingService;
 
@@ -28,12 +32,16 @@ public class TripService implements ITripService {
     @Inject
     private IDAOFactory daoFactory;
 
+    // Injecting the JPA EntityManager
     @PersistenceContext
     private EntityManager em;
 
     @Override
+    //Transactional annotation is used to specify the scope of a single database transaction
     @Transactional
     public TripDTO create(Long riderId, Long pickupId, Long destinationId) throws EntityNotFoundException {
+
+        // create the data access objects and the model objects
         var locationDAO = daoFactory.createLocationDAO();
         var riderDAO = daoFactory.createRiderDAO();
         var trip = modelFactory.createTrip();
@@ -52,9 +60,12 @@ public class TripService implements ITripService {
         trip.setState(TripState.CREATED);
         trip.setRider(rider);
 
+        // Saves a new entity to the database. The entity will be inserted into the database when a transaction commits
         em.persist(trip);
+        //It synchronizes the persistence context to the underlying database
         em.flush();
 
+        // create a data transfer object from the model object
         TripDTO tripDTO = getTripDTO(trip);
         updateFare(tripDTO);
 
@@ -109,6 +120,7 @@ public class TripService implements ITripService {
             throw new IllegalStateException("The rider's trip is null or the trip has not been in a queued state");
         }
 
+        // Lock the trip to prevent other transactions from modifying it
         em.lock(trip, LockModeType.READ);
 
         IMatch _match = modelFactory.createMatch();
@@ -124,7 +136,31 @@ public class TripService implements ITripService {
         em.persist(_match);
         em.flush();
 
+        // Release the lock
         em.lock(trip, LockModeType.NONE);
+
+        // Optimistic locking
+        /*
+        IMatch _match = modelFactory.createMatch();
+        _match.setTrip(trip);
+        _match.setDate(new Date());
+        _match.setFare(getMoney(match.getFare()));
+        _match.setVehicle(vehicle);
+        _match.setDriver(driver);
+
+        trip.setState(TripState.MATCHED);
+        trip.setMatch(_match);
+
+        em.persist(_match);
+        em.flush();
+
+        // Check for version conflict
+        if (!em.contains(trip)) {
+            // If build in optimistic of Java Persistence API (JPA)locking fails, throw an exception (persist is only
+                //working if no modification from another thread has been done)
+            throw new OptimisticLockException("The trip was updated by another transaction");
+        }
+        */
     }
 
     @Override
@@ -169,9 +205,11 @@ public class TripService implements ITripService {
         em.flush();
     }
 
+
     @Override
     @Transactional
     public boolean addStop(TripDTO trip, Long locationId) throws EntityNotFoundException, IllegalStateException {
+
         var tripDAO = daoFactory.createTripDAO();
         var locationDAO = daoFactory.createLocationDAO();
 
@@ -182,10 +220,12 @@ public class TripService implements ITripService {
             throw new EntityNotFoundException("The trip or location does not exist");
         }
 
+        // Stops can only be added to trips in the created state
         if (_trip.getState() != TripState.CREATED) {
             throw new IllegalStateException("The trip has not been in the created state");
         }
 
+        // If stop already exists, return false
         if (_trip.getStops().stream().anyMatch(stop -> Objects.equals(stop.getId(), locationId))) {
             return false;
         }
@@ -202,6 +242,7 @@ public class TripService implements ITripService {
     @Override
     @Transactional
     public boolean removeStop(TripDTO trip, Long locationId) throws EntityNotFoundException, IllegalStateException {
+
         var tripDAO = daoFactory.createTripDAO();
         var locationDAO = daoFactory.createLocationDAO();
 
@@ -216,6 +257,7 @@ public class TripService implements ITripService {
             throw new IllegalStateException("The trip has not been in the created state");
         }
 
+        // If the stop does not exist, return false
         if (!_trip.getStops().stream().anyMatch(stop -> Objects.equals(stop.getId(), locationId))) {
             return false;
         }
@@ -260,6 +302,7 @@ public class TripService implements ITripService {
         return tripDTO;
     }
 
+    //Transfers a model object to a data transfer object
     private TripDTO getTripDTO(ITrip trip) {
         TripDTO tripDTO = new TripDTO();
 
@@ -272,6 +315,7 @@ public class TripService implements ITripService {
         return tripDTO;
     }
 
+    // Transfers a data transfer object to a model object
     private IMoney getMoney(MoneyDTO moneyDTO) {
         var money = modelFactory.createMoney();
 

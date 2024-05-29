@@ -10,6 +10,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class InvalidTripMapper implements ExceptionMapper<InvalidTripException> {
 
+    // Custom JAX-RS exception maps a InvalidTripException to a HTTP 412 response.
     @Override
     public Response toResponse(InvalidTripException exception) {
         return Response.status(Response.Status.PRECONDITION_FAILED)

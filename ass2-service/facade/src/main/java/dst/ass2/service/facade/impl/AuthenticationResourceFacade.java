@@ -11,7 +11,13 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-@Path("auth")
+
+// The facade pattern is used here to abstract the details of making HTTP requests to the IAuthenticationResource.
+// This allows the rest of the application to use AuthenticationResourceFacade without needing to know about
+// the details of HTTP requests, URIs.
+
+//gRPC client is used
+@Path("/auth")
 public class AuthenticationResourceFacade implements IAuthenticationResource {
 
     private final IAuthenticationClient client;

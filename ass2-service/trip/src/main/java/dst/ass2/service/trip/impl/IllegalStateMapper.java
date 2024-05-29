@@ -8,6 +8,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class IllegalStateMapper implements ExceptionMapper<IllegalStateException> {
 
+    // Custom JAX-RS exception mapper for IllegalStateException to a HTTP 422 response.
     @Override
     public Response toResponse(IllegalStateException exception) {
         return Response.status(422)
