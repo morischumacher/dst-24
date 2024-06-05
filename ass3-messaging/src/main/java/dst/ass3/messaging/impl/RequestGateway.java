@@ -1,5 +1,6 @@
 package dst.ass3.messaging.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -37,16 +38,32 @@ public class RequestGateway implements IRequestGateway {
     @Override
     public void submitRequest(TripRequest request) {
         try {
-            // Serialize the request
-            String message = mapper.writeValueAsString(request);
-
-            // Send to the exchange
-            connect();
-            var topic = "topic." + request.getRegion().name().toLowerCase();
-            channel.basicPublish("dst.custom.exchange", topic, null, message.getBytes());
+            String serializedRequest = serializeRequest(request);
+            establishConnection();
+            String topic = generateTopic(request);
+            publishToExchange(serializedRequest, topic);
         } catch (IOException | TimeoutException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String serializeRequest(TripRequest request) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(request);
+    }
+
+    private void establishConnection() throws IOException, TimeoutException {
+        if (connection == null) {
+            connect();
+        }
+    }
+
+    private String generateTopic(TripRequest request) {
+        return "topic." + request.getRegion().name().toLowerCase();
+    }
+
+    private void publishToExchange(String message, String topic) throws IOException {
+        channel.basicPublish("dst.custom.exchange", topic, null, message.getBytes());
     }
 
     @Override
