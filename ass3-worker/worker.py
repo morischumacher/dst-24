@@ -77,7 +77,7 @@ class Worker:
         random_sleeps = {
             "at_linz": (1, 2),
             "at_vienna": (3, 5),
-            "de_berlin": (9, 11),
+            "de_berlin": (8, 11),
         }
 
         lower, upper = random_sleeps[self.region]
