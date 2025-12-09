@@ -26,9 +26,13 @@ public class ElasticityController implements IElasticityController {
 
     // Inner class for region information
     static private class RegionInfo {
+        // amount of workers
         public Long workerCount;
+        // amount of requests (requests in the queue)
         public Long requestCount;
+        // average processing time of the last 10 requests
         public Double avgTime;
+        // region specific DEFINED maximum wait time
         public Long maxWaittime;
 
         // Constructor
@@ -52,7 +56,7 @@ public class ElasticityController implements IElasticityController {
         // Calculate the linear waiting time
         double linearWaitingTime = info.requestCount * info.avgTime;
 
-        // Calculate the expected waiting time
+        // Calculate the expected waiting time (waiting time divided by the current worker count)
         double exp = linearWaitingTime / optimalWorkers;
 
         // If the expected waiting time is greater than the maximum waiting time plus the scale out threshold,
@@ -82,7 +86,7 @@ public class ElasticityController implements IElasticityController {
         Map<Region, Long> requestCounts = monitor.getRequestCount();
         Map<Region, Double> avgTimes = monitor.getAverageProcessingTime();
 
-        // Define the maximum wait times for each region
+        // Define the maximum wait times for each region in milliseconds
         Map<Region, Long> maxWaitTimesMS = Map.of(
                 Region.AT_VIENNA, 30L * 1000,
                 Region.AT_LINZ, 30L * 1000,
@@ -93,9 +97,11 @@ public class ElasticityController implements IElasticityController {
         for (Region r : Region.values()) {
             // Create a new RegionInfo object for the current region
             RegionInfo info = new RegionInfo(
+                    // Get worker count, request count and avg waiting time  of region r from map or default to 0
                     workerCounts.getOrDefault(r, 0L),
                     requestCounts.getOrDefault(r, 0L),
                     avgTimes.getOrDefault(r, 0.0),
+                    // Get defined maximum waiting time of region r from map
                     maxWaitTimesMS.get(r)
             );
 
@@ -116,19 +122,22 @@ public class ElasticityController implements IElasticityController {
         }
     }
 
+    // Span new worker from region delta times
     private void spawnWorkers(Region region, Long delta) throws ContainerException {
         for (int i = 0; i < delta; i++) {
             containerService.startWorker(region);
         }
     }
 
+    // Remove delta workers
     private void removeWorkers(Region region, Long delta) throws ContainerException {
+        // List all containers in the region
         List<ContainerInfo> regionContainers = containerService
                 .listContainers()
                 .stream()
                 .filter(c -> c.getWorkerRegion() == region)
                 .collect(Collectors.toList());
-
+        // Remove first delta workers
         for (int i = 0; i < delta; i++) {
             containerService.stopContainer(regionContainers.get(i).getContainerId());
         }

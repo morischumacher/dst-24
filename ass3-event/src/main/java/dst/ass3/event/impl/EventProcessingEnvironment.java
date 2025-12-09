@@ -13,6 +13,7 @@ import java.time.Duration;
 public class EventProcessingEnvironment implements IEventProcessingEnvironment {
 
     private Time timeout;
+    // SinkFunction to generate Flink sink for the lifecycle event (indicating a change in the lifecycle state of an ITripEventInfo)
     private SinkFunction<LifecycleEvent> lifecycleEventSink;
     private SinkFunction<MatchingDuration> matchingDurationSink;
     private SinkFunction<AverageMatchingDuration> averageMatchingDurationSink;
@@ -22,8 +23,11 @@ public class EventProcessingEnvironment implements IEventProcessingEnvironment {
 
     @Override
     public void initialize(StreamExecutionEnvironment env) {
+        // Creates the event source which receives the TripEventInfo
         EventSourceFunction source = createEventSourceFunction();
+        // Sets up the stream
         var stream = setupStream(env, source);
+        // Adds the lifecycle event sink
         addLifecycleEventSink(stream);
     }
 
@@ -32,7 +36,10 @@ public class EventProcessingEnvironment implements IEventProcessingEnvironment {
     }
 
     private SingleOutputStreamOperator<LifecycleEvent> setupStream(StreamExecutionEnvironment env, EventSourceFunction source) {
+        // Sets up the watermark strategy for the event lifecycle stream
         var watermarkStrategy = createWatermarkStrategy();
+
+        // Adds the source to the environment, filters out events with no region, maps the event to a lifecycle event, assigns timestamps and watermarks
         return env.addSource(source)
                 .filter(info -> info.getRegion() != null)
                 .map(LifecycleEvent::new)
@@ -40,10 +47,15 @@ public class EventProcessingEnvironment implements IEventProcessingEnvironment {
     }
 
     private WatermarkStrategy<LifecycleEvent> createWatermarkStrategy() {
+        // when we get a new event, we will wait for 20 seconds before we consider the event as out of order
+        // in oder words if we get an event, we assume all events with a timestamp older than 20 seconds are already received
+        // It subtracts 20 seconds from the latest event timestamp and uses this as the watermark
         return WatermarkStrategy.<LifecycleEvent>forBoundedOutOfOrderness(Duration.ofSeconds(20))
+                // we use the timestamp of the event as the event time
                 .withTimestampAssigner((event, timestamp) -> event.getTimestamp());
     }
 
+    // Adds the lifecycle event sink (endpoint of the stream where the data will be written to) to the lifecycle stream
     private void addLifecycleEventSink(SingleOutputStreamOperator<LifecycleEvent> stream) {
         if (lifecycleEventSink != null) {
             stream.addSink(lifecycleEventSink);

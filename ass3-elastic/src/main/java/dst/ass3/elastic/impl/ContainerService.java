@@ -24,6 +24,7 @@ public class ContainerService implements IContainerService {
         this.config = DefaultDockerClientConfig.createDefaultConfigBuilder().build();
     }
 
+    // List all running Docker containers that are using the "dst/ass3-worker" image.
     @Override
     public List<ContainerInfo> listContainers() throws ContainerException {
         return executeWithDockerClient(docker -> {
@@ -44,6 +45,7 @@ public class ContainerService implements IContainerService {
         });
     }
 
+    // Stops a running container with the given ID.
     @Override
     public void stopContainer(String containerId) throws ContainerException {
         executeWithDockerClient(docker -> {
@@ -53,26 +55,26 @@ public class ContainerService implements IContainerService {
         });
     }
 
+    //
     @Override
     public ContainerInfo startWorker(Region region) throws ContainerException {
         return executeWithDockerClient(docker -> {
-            // Create and start a new container running the "dst/ass3-worker" image
-            // Create a new container command with the specified image
+            // Create a new container command with the specified image (docker build)
             var createContainerCommand = docker.createContainerCmd("dst/ass3-worker");
 
-            // Configure the host for the container
+            // Configure the host for the container (auto-remove true --> remove container when stopped)
             var hostConfig = HostConfig.newHostConfig()
                     .withAutoRemove(true)
                     .withNetworkMode("dst");
 
-            // Set the host configuration and command for the container
+            // Create container with host config, and set the region for the entrypoint script (i.e. docker run at_linz)
             createContainerCommand.withHostConfig(hostConfig)
                     .withCmd(region.toString().toLowerCase());
 
-            // Execute the command to create the container
+            // Execute the command to create the container (docker create)
             var container = createContainerCommand.exec();
 
-            // Start the created container
+            // Start the created container (docker start)
             docker.startContainerCmd(container.getId()).exec();
 
             // Create a new ContainerInfo object for the started container
@@ -90,15 +92,20 @@ public class ContainerService implements IContainerService {
             // Check if the container is running and set the running status in the ContainerInfo object
             var inspect = docker.inspectContainerCmd(container.getId()).exec();
             try {
+                // Get running state and set it in the ContainerInfo object
                 info.setRunning(inspect.getState().getRunning());
             } catch (NullPointerException e) {
+                // if the state is null, the container is not running
                 info.setRunning(false);
             }
             return info;
         });
     }
 
+
+    // Helper to execute a Docker command.
     private <T> T executeWithDockerClient(DockerCommand<T> command) throws ContainerException {
+        // Create docker client with given config and execute the command
         try (var docker = DockerClientBuilder.getInstance(config).build()) {
             return command.execute(docker);
         } catch (IOException e) {
