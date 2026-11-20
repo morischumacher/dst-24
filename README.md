@@ -1,6 +1,16 @@
 Distributed Systems Technologies
 ================================
 
+
+## At a glance
+
+| | |
+|---|---|
+| **What** | My solutions to the three assignments of Distributed Systems Technologies, TU Wien (2024). |
+| **Covers** | Persistence with JPA, jOOQ, MongoDB and Redis.<br>A custom IoC container (Javassist) and aspect-oriented programming (AspectJ / Spring AOP).<br>REST (Jersey) and gRPC services with authentication.<br>Messaging with RabbitMQ, complex event processing with Apache Flink, and elastic scaling of Docker-based workers. |
+| **Stack** | Java, Maven, Spring Boot, Docker; a Python worker |
+| **Note** | The assignment template is by the TU Wien Distributed Systems Group; the implementations are mine. |
+
 Please find details about the template in the assignment document.
 
 Build
